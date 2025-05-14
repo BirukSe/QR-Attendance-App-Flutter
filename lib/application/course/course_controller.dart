@@ -1,3 +1,4 @@
+import 'package:crossplatform_flutter/domain/auth/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:crossplatform_flutter/domain/course/course.dart';
 import 'package:crossplatform_flutter/infrastructure/course/course_repository.dart';
@@ -42,6 +43,14 @@ class CourseController extends StateNotifier<AsyncValue<List<Course>>> {
       return null;
     }
   }
+  Future<List<User>> getStudentsByCourseId(String courseId) async {
+    try {
+      return await _courseRepository.getStudentByCourseId(courseId) ?? [];
+    } catch (e) {
+      print('Error in getStudentsByCourseId: $e');
+      return [];
+    }
+  }
 
   Future<Course?> createCourse(String name, String section, String schedule) async {
     try {
@@ -64,18 +73,19 @@ class CourseController extends StateNotifier<AsyncValue<List<Course>>> {
     }
   }
 
-  // Future<bool> addStudentToCourse(String courseId, String studentId) async {
-  //   try {
-  //     await _courseRepository.addStudentToCourse(courseId, studentId);
+
+  Future<bool> addStudentToCourse(String courseId, String studentId, String studentName) async {
+    try {
+      await _courseRepository.addStudentToCourse(courseId, studentId, studentName);
       
-  //     // Refresh courses to get updated data
-  //     await fetchCourses();
-  //     return true;
-  //   } catch (e) {
-  //     print('Error in addStudentToCourse: $e');
-  //     return false;
-  //   }
-  // }
+      // Refresh courses to get updated data
+      await fetchCourses();
+      return true;
+    } catch (e) {
+      print('Error in addStudentToCourse: $e');
+      return false;
+    }
+  }
 
   // Future<bool> removeStudentFromCourse(String courseId, String studentId) async {
   //   try {
@@ -106,7 +116,7 @@ class CourseController extends StateNotifier<AsyncValue<List<Course>>> {
 final courseRepositoryProvider = Provider<CourseRepository>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://172.16.20.7:5000', // Replace with your API URL
+      baseUrl: 'http://10.5.196.74:5000', // Replace with your API URL
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 3),
       headers: {
@@ -137,7 +147,10 @@ final teacherCoursesProvider = StateNotifierProvider<CourseController, AsyncValu
   final userId = authState.value?.id;
   return CourseController(courseRepository, userId, true);
 });
-
+final courseStudentsProvider = FutureProvider.family<List<User>, String>((ref, courseId) async {
+  final courseController = ref.read(teacherCoursesProvider.notifier);
+  return courseController.getStudentsByCourseId(courseId);
+});
 final courseByIdProvider = Provider.family<AsyncValue<Course?>, String>((ref, id) {
   final coursesState = ref.watch(studentCoursesProvider);
   

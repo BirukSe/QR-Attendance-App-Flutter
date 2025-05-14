@@ -1,3 +1,4 @@
+import 'package:crossplatform_flutter/presentation/pages/teacher/section_detail_page.dart';
 import 'package:crossplatform_flutter/presentation/pages/teacher/teacher_dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import 'package:crossplatform_flutter/presentation/pages/auth/signup_page.dart';
 import 'package:crossplatform_flutter/presentation/pages/onboarding/splash_page.dart';
 
 import 'package:crossplatform_flutter/presentation/pages/student/student_dashboard_page.dart';
+import 'package:crossplatform_flutter/presentation/pages/teacher/qr_display_page.dart';
 
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -33,6 +35,20 @@ final appRouter = GoRouter(
      GoRoute(
       path: '/teacher-dashboard',
       builder: (context, state) => const TeacherDashboardPage(),
+    ),
+     GoRoute(
+      path: '/section-detail/:courseId',
+      builder: (context, state) {
+        final courseId = state.pathParameters['courseId']!;
+        return SectionDetailPage(courseId: courseId);
+      },
+    ),
+      GoRoute(
+      path: '/qr-generator/:sectionId',
+      builder: (context, state) {
+        final sectionId = state.pathParameters['sectionId']!;
+        return QrGeneratorPage(sectionId: sectionId);
+      },
     ),
   
    

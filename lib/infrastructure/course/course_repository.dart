@@ -1,3 +1,4 @@
+import 'package:crossplatform_flutter/domain/auth/user.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:crossplatform_flutter/domain/course/course.dart';
@@ -9,6 +10,31 @@ class CourseRepository {
   CourseRepository(this._dio, this._secureStorage);
 
   // Get all courses (generic method)
+  Future<bool> addStudentToCourse(String courseId, String studentId, String studentName) async {
+    try {
+      final token = await _secureStorage.read(key: 'auth_token');
+      if (token == null) throw Exception('Not authenticated');
+      final response = await _dio.post(
+        '/teacher/class/$courseId/students',
+        data: {'ID': studentId, 'name': studentName},
+        options: Options(headers: {'Authorization Bearer': token}),
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Failed to add student to course: ${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw Exception('Failed to add student to course: ${e.response?.data['message']}');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      print('Error in addStudentToCourse: $e');
+      throw Exception('Failed to add student to course: $e');
+    }
+  }
   Future<List<Course>> getAllCourses() async {
     try {
       print("what the fuck");
@@ -45,6 +71,43 @@ class CourseRepository {
       throw Exception('Failed to load courses: $e');
     }
   }
+Future<List<User>> getStudentByCourseId(String courseId) async {
+  try {
+    final token = await _secureStorage.read(key: 'auth_token');
+    if (token == null) throw Exception('Not authenticated');
+    
+    final response = await _dio.get(
+      '/attendance/class/$courseId/history',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    
+    print("Response data: ${response.data}");
+    
+    if (response.statusCode == 200) {
+      final data = response.data as Map<String, dynamic>;
+      
+      // Access students from overallStats as shown in the response
+      if (data['overallStats'] != null && data['overallStats']['students'] is List) {
+        return (data['overallStats']['students'] as List)
+          .map((studentJson) => User.fromJson(studentJson))
+          .toList();
+      } else {
+        throw Exception('Invalid response format: expected array of students in overallStats');
+      }
+    } else {
+      throw Exception('Failed to load students: ${response.statusMessage}');
+    }
+  } on DioException catch (e) {
+    if (e.response != null) {
+      throw Exception('Failed to load students: ${e.response?.data['message']}');
+    } else {
+      throw Exception('Network error: ${e.message}');
+    }
+  } catch (e) {
+    print('Error in getStudentByCourseId: $e');
+    rethrow;
+  }
+}
 
   // Get courses for a student
   Future<List<Course>> getStudentCourses(String studentId) async {
@@ -62,7 +125,7 @@ class CourseRepository {
         if (data is Map<String, dynamic> && data['data'] is List) {
           return (data['data'] as List).map((courseJson) {
             if (courseJson is Map<String, dynamic>) {
-              return Course.fromJson(courseJson);
+              return User.fromJson(courseJson);
             }
             return null;
           }).whereType<Course>().toList();
