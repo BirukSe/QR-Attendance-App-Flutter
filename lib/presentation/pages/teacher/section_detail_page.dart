@@ -117,13 +117,7 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
               
             ],
           ),
-           GestureDetector(
-          onTap:() {},
-          child: Image.asset(
-            'assets/images/gg_qr.png',
            
-          ),
-        ),
         ],
       ),
     );

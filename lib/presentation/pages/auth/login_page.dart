@@ -1,9 +1,9 @@
+import 'package:crossplatform_flutter/core/widgets/myTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crossplatform_flutter/application/auth/auth_controller.dart';
-import 'package:crossplatform_flutter/domain/auth/user.dart'; // Import UserRole from here
-import 'package:dio/dio.dart';
+import 'package:crossplatform_flutter/domain/auth/user.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -25,7 +25,7 @@ class LoginPage extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 60, bottom: 24),
             child: Column(
               children: [
-                // Logo - using the single Logo.png file
+                // Logo
                 Image.asset(
                   'assets/images/Logo.png',
                   width: 100,
@@ -53,11 +53,10 @@ class LoginPage extends ConsumerWidget {
             ),
           ),
           
-          // Bottom section with form
+          // Bottom section with form (now scrollable)
           Expanded(
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -65,169 +64,109 @@ class LoginPage extends ConsumerWidget {
                   topRight: Radius.circular(30),
                 ),
               ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  // Name field
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    // Name field
+                    Mytextfield(
+                      controller: nameController,
                       hintText: 'Name',
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  // ID field
-                  TextField(
-                    controller: idController,
-                    decoration: InputDecoration(
+                    const SizedBox(height: 16),
+                    // ID field
+                    Mytextfield(
+                      controller: idController,
                       hintText: 'ID',
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Password field
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
+                    const SizedBox(height: 16),
+                    // Password field
+                    Mytextfield(
+                      isPassword: true,
+                      controller: passwordController,
                       hintText: 'Password',
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Log in button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        // Show loading indicator
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                        
-                        try {
-                          // Call login API
-                          await authController.signIn(
-                            nameController.text,
-                            idController.text,
-                            passwordController.text,
+                    const SizedBox(height: 24),
+                    // Log in button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Show loading indicator
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
                           );
                           
-                          // Close loading dialog
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                          }
-                          
-                          // Get user from state
-                          final user = ref.read(authControllerProvider).value;
-                          print(user);
-                          print("role is");
-                          print(user?.role);
-                          
-                          // Navigate based on user role
-                          if (context.mounted) {
-                            if (user?.role == UserRole.teacher) {
-                              context.go('/teacher-dashboard');
-                            } else {
-                              context.go('/student-dashboard');
+                          try {
+                            // Call login API
+                            await authController.signIn(
+                              nameController.text,
+                              idController.text,
+                              passwordController.text,
+                            );
+                            
+                            // Close loading dialog
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                            
+                            // Get user from state
+                            final user = ref.read(authControllerProvider).value;
+                            
+                            // Navigate based on user role
+                            if (context.mounted) {
+                              if (user?.role == UserRole.teacher) {
+                                context.go('/teacher-dashboard');
+                              } else {
+                                context.go('/student-dashboard');
+                              }
+                            }
+                          } catch (e) {
+                            // Close loading dialog
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                            
+                            // Show error message
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Login failed: ${e.toString()}'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
                             }
                           }
-                        } catch (e) {
-                          // Close loading dialog
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                          }
-                          
-                          // Show error message
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Login failed: ${e.toString()}'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0A1A2F),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0A1A2F),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Log In'),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    // Sign up link
+                    TextButton(
+                      onPressed: () => context.go('/signup'),
+                      child: const Text(
+                        "I don't have an account. Sign up",
+                        style: TextStyle(
+                          color: Color(0xFF0A1A2F),
                         ),
                       ),
-                      child: const Text('Log In'),
                     ),
-                  ),
-                  const Spacer(),
-                  // Sign up link
-                  TextButton(
-                    onPressed: () => context.go('/signup'),
-                    child: const Text(
-                      "I don't have an account. Sign up",
-                      style: TextStyle(
-                        color: Color(0xFF0A1A2F),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

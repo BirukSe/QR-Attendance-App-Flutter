@@ -44,10 +44,10 @@ final appRouter = GoRouter(
       },
     ),
       GoRoute(
-      path: '/qr-generator/:sectionId',
+      path: '/qr-generator/:courseId',
       builder: (context, state) {
-        final sectionId = state.pathParameters['sectionId']!;
-        return QrGeneratorPage(sectionId: sectionId);
+        final courseId = state.pathParameters['courseId']!;
+        return QrDisplayPage(courseId: courseId);
       },
     ),
   

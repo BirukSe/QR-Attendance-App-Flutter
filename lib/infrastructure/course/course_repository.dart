@@ -73,6 +73,7 @@ class CourseRepository {
   }
 Future<List<User>> getStudentByCourseId(String courseId) async {
   try {
+    print('Fetching students for course ID: $courseId');
     final token = await _secureStorage.read(key: 'auth_token');
     if (token == null) throw Exception('Not authenticated');
     

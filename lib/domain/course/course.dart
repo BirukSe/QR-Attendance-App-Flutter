@@ -5,7 +5,9 @@ class Course {
   final String? teacherId;   // Comes from "teacher" field
   final String? teacherName; // Comes from teacher's name (for students)
   final List<String> students; // List of student IDs
-  final int studentCount;   // Derived from students.length
+  final int studentCount;
+  final String? attendance;
+  // Derived from students.length
 
   Course({
     required this.id,
@@ -13,6 +15,8 @@ class Course {
     required this.section,
     this.teacherId,
     this.teacherName,
+    this.attendance,
+    
     List<String>? students,
     int? studentCount,
   }) : 
@@ -58,6 +62,10 @@ class Course {
     if (sectionData != null) {
       section = sectionData.toString();
     }
+    String attendance = '';
+    if (json['attendance'] != null) {
+      attendance = json['attendance'].toString();
+    }
 
     // Calculate student count safely
     int studentCount = 0;
@@ -82,6 +90,7 @@ class Course {
       teacherName: teacherName,
       students: students,
       studentCount: studentCount,
+      attendance: attendance
     );
   }
 

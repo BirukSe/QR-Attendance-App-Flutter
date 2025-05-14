@@ -3,7 +3,7 @@ import 'package:crossplatform_flutter/domain/auth/user.dart';
 import 'package:crossplatform_flutter/infrastructure/auth/auth_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
+// #  e <s ,f>
 class AuthController extends StateNotifier<AsyncValue<User?>> {
   final AuthRepository _authRepository;
 
@@ -46,7 +46,7 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://10.5.196.74:5000/api', // Replace with your API URL
+      baseUrl: 'http://172.16.20.7:5000/api', // Replace with your API URL
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
