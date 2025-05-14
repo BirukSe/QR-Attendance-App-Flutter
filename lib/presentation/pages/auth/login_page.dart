@@ -164,6 +164,7 @@ class LoginPage extends ConsumerWidget {
                         try {
                           // Call login API
                           await authController.signIn(
+                            nameController.text,
                             idController.text,
                             passwordController.text,
                           );
@@ -175,6 +176,9 @@ class LoginPage extends ConsumerWidget {
                           
                           // Get user from state
                           final user = ref.read(authControllerProvider).value;
+                          print(user);
+                          print("role is");
+                          print(user?.role);
                           
                           // Navigate based on user role
                           if (context.mounted) {

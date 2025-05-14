@@ -8,48 +8,28 @@ class AuthRepository {
 
   AuthRepository(this._dio, this._secureStorage);
 
-  Future<User> signIn(String id, String password) async {
-    try {
-      final response = await _dio.post(
-        '/auth/login',
-        data: {
-          'id': id,
-          'password': password,
-        },
+Future<User?> signIn(String id, String password) async {
+  try {
+    final response = await _dio.post(
+      '/auth/login',
+      data: {'ID': id, 'password': password},
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      await _secureStorage.write(
+        key: 'auth_token',
+        value: response.data['token'],
       );
-
-      // Check if response is successful
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Save token to secure storage
-        final token = response.data['token'];
-        await _secureStorage.write(key: 'auth_token', value: token);
-
-        // Parse user data
-        final userData = response.data['user'];
-        final user = User(
-          id: userData['id'],
-          name: userData['name'],
-          email: userData['email'],
-          role: userData['role'] == 'teacher' ? UserRole.teacher : UserRole.student,
-        );
-
-        return user;
-      } else {
-        throw Exception('Failed to login: ${response.statusMessage}');
-      }
-    } on DioException catch (e) {
-      if (e.response != null) {
-        // The server responded with an error
-        final errorMessage = e.response?.data['message'] ?? 'Unknown error occurred';
-        throw Exception('Login failed: $errorMessage');
-      } else {
-        // Something happened in setting up the request
-        throw Exception('Network error: ${e.message}');
-      }
-    } catch (e) {
-      throw Exception('Login failed: ${e.toString()}');
+      
+      // Use User.fromJson
+      return User.fromJson(response.data['user']);
     }
+  } catch (e) {
+    print('Sign-in error: $e');
+    rethrow;
   }
+  return null;
+}
 
   Future<User> signUp(String name, String id, String email, String password, UserRole role) async {
     try {
@@ -57,7 +37,7 @@ class AuthRepository {
         '/auth/register',
         data: {
           'name': name,
-          'id': id,
+          'ID': id,
           'email': email,
           'password': password,
           'role': role == UserRole.teacher ? 'teacher' : 'student',
@@ -70,16 +50,8 @@ class AuthRepository {
         final token = response.data['token'];
         await _secureStorage.write(key: 'auth_token', value: token);
 
-        // Parse user data
-        final userData = response.data['user'];
-        final user = User(
-          id: userData['id'],
-          name: userData['name'],
-          email: userData['email'],
-          role: userData['role'] == 'teacher' ? UserRole.teacher : UserRole.student,
-        );
-
-        return user;
+         return User.fromJson(response.data['user']);
+        
       } else {
         throw Exception('Failed to register: ${response.statusMessage}');
       }
@@ -143,13 +115,7 @@ class AuthRepository {
       );
       
       if (response.statusCode == 200) {
-        final userData = response.data['user'];
-        return User(
-          id: userData['id'],
-          name: userData['name'],
-          email: userData['email'],
-          role: userData['role'] == 'teacher' ? UserRole.teacher : UserRole.student,
-        );
+         return User.fromJson(response.data['user']);
       }
       
       return null;

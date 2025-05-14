@@ -9,7 +9,7 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
 
   AuthController(this._authRepository) : super(const AsyncValue.data(null));
 
-  Future<void> signIn(String id, String password) async {
+  Future<void> signIn(String name, String id, String password) async {
     state = const AsyncValue.loading();
     try {
       final user = await _authRepository.signIn(id, password);
@@ -46,7 +46,7 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'https://your-api-url.com/api', // Replace with your API URL
+      baseUrl: 'http://172.16.20.7:5000/api', // Replace with your API URL
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 3),
       headers: {
