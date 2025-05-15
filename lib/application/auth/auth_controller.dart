@@ -46,7 +46,7 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://172.16.20.7:5000/api', // Replace with your API URL
+      baseUrl: 'http://192.168.137.136:5000/api', // Replace with your API URL
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {

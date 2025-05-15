@@ -1,4 +1,5 @@
 import 'package:crossplatform_flutter/core/errors/AttendanceError.dart';
+import 'package:crossplatform_flutter/domain/attendance/attendanceStats.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -8,6 +9,54 @@ class AttendanceRepository {
   final FlutterSecureStorage _secureStorage;
 
   AttendanceRepository(this._dio, this._secureStorage);
+   Future<Attendancestats?> getStudentAttendanceStats(String courseId, String studentId) async {
+    try {
+      print("i am in attendance repository");
+      print(courseId);
+      print("and with");
+      print(studentId);
+      final token = await _secureStorage.read(key: 'auth_token');
+      print("and my token is");
+      print(token);
+      final response = await _dio.post(
+        '/class/$courseId/history',
+        data: {'studentId': studentId},
+        options: Options(headers: {
+          'Authorization': 'Bearer $token'
+        })
+      );
+      print("the response is");
+      print(response);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // The QR code check seems out of place here since your endpoint returns attendance stats
+        // If you need both, you should handle them separately
+        print("modified response");
+        print(Attendancestats.fromJson(response.data));
+        return  Attendancestats.fromJson(response.data);
+      } else {
+        throw AttendanceException(
+          message: response.data['message'] ?? 'Failed to fetch attendance stats',
+          statusCode: response.statusCode,
+        );
+      }
+    } on DioException catch (e) {
+      print("i have error bitch");
+      print(e.message);
+      throw AttendanceException(
+        message: e.response?.data['message'] ?? 'Network error occurred',
+        statusCode: e.response?.statusCode ?? 500,
+      );
+    } catch (error) {
+      print("i have the second error bitch");
+      print(error);
+      throw AttendanceException(
+        message: 'An unexpected error occurred',
+        statusCode: 500,
+      );
+    }
+  }
+
 
   Future<String> generateQrCode(String classId) async {
     print("I am in the generateQrCode method");

@@ -1,3 +1,7 @@
+import 'package:crossplatform_flutter/application/attendance/attendance_controller.dart';
+import 'package:crossplatform_flutter/core/widgets/BooleanStrikeGrid.dart';
+import 'package:crossplatform_flutter/core/widgets/attendanceSummary.dart';
+import 'package:crossplatform_flutter/domain/attendance/attendanceStats.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +33,7 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
   Widget build(BuildContext context) {
     final studentsAsync = ref.watch(courseStudentsProvider(widget.courseId));
     final courseAsync = ref.watch(teacherCoursesProvider);
+  
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A1A2F),
@@ -67,7 +72,7 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
                 error: (error, stack) => Center(
                   child: Text('Error: $error', style: const TextStyle(color: Colors.white)),
                 ),
-                data: (students) => _buildStudentList(students),
+                data: (students) => _buildStudentList(students, widget.courseId),
               ),
             ),
           ],
@@ -123,24 +128,49 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
     );
   }
 
-  Widget _buildStudentList(List<User> students) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 16),
-              itemCount: students.length,
-              itemBuilder: (context, index) {
-                final student = students[index];
-                final attendance = student.overallStats ?? 0;
-                
-                return Padding(
+Widget _buildStudentList(List<User> students, String courseId) {
+  return Container(
+    margin: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.only(top: 16),
+            itemCount: students.length,
+            itemBuilder: (context, index) {
+              final student = students[index];
+              final attendance = student.overallStats ?? 0;
+              
+              return GestureDetector(
+                onTap: () {
+                  final attendanceNotifier = ref.read(attendanceControllerProvider.notifier);
+                  final attendanceFuture = attendanceNotifier.getStudentAttendanceStats(
+                    courseId, 
+                    student.id
+                  );
+
+                 showModalBottomSheet(
+  context: context,
+  
+  isScrollControlled: true,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  ),
+  backgroundColor: Colors.white,
+  builder: (context) => AttendanceDetailsModal(
+    student: student,
+    courseId: courseId,
+    attendancePercentage: attendance.toDouble(),
+    attendanceFuture: attendanceFuture,
+  ),
+);
+
+                },
+                child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Column(
                     children: [
@@ -158,14 +188,16 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: _getAttendanceColor(attendance.toDouble()),
+                              // color: _getAttendanceColor(attendance.toDouble()),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '$attendance% Present',
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                               
+                                color: Color.fromARGB(255, 197, 202, 216),
+                                fontSize: 16,
                               ),
                             ),
                           ),
@@ -186,21 +218,21 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
                         const Divider(height: 16),
                     ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
-          
-          // Add Student Form or Button
-          if (_showAddForm)
-            _buildAddStudentForm()
-          else
-            _buildAddStudentButton(),
-        ],
-      ),
-    );
-  }
-
+        ),
+        
+        if (_showAddForm)
+          _buildAddStudentForm()
+        else
+          _buildAddStudentButton(),
+      ],
+    ),
+  );
+}
+ 
   Widget _buildAddStudentButton() {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -334,7 +366,7 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Error: $e'),
-                                backgroundColor: Colors.red,
+                                // backgroundColor: Colors.red,
                               ),
                             );
                           }
@@ -359,10 +391,10 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
     );
   }
 
-  Color _getAttendanceColor(double percentage) {
-    if (percentage >= 90) return Colors.green;
-    if (percentage >= 80) return Colors.lightGreen;
-    if (percentage >= 60) return Colors.orange;
-    return Colors.red;
-  }
+  // Color _getAttendanceColor(double percentage) {
+  //   if (percentage >= 90) return Colors.green;
+  //   if (percentage >= 80) return Colors.lightGreen;
+  //   if (percentage >= 60) return Colors.orange;
+  //   return Colors.;
+  // }
 }

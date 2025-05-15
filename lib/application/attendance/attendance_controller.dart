@@ -1,4 +1,6 @@
 
+import 'package:crossplatform_flutter/core/errors/AttendanceError.dart';
+import 'package:crossplatform_flutter/domain/attendance/attendanceStats.dart';
 import 'package:crossplatform_flutter/infrastructure/attendance/attendance_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +10,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 final dioProvider = Provider<Dio>((ref) {
   return Dio(
     BaseOptions(
-      baseUrl: 'http://172.16.20.7:5000/attendance',
+      baseUrl: 'http://192.168.137.136:5000/attendance',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
@@ -38,6 +40,22 @@ class AttendanceController extends StateNotifier<AsyncValue<String>> {
   String? _lastCourseId; // Track last generated course
   
   AttendanceController(this._attendanceRepository) : super(const AsyncValue.data(''));
+  Future<Attendancestats?> getStudentAttendanceStats(String courseId, String studentId) async{
+    print("i am in getstas controller with");
+    print(courseId);
+    print("and");
+    print(studentId);
+    try{
+      final state=await _attendanceRepository.getStudentAttendanceStats(courseId, studentId);
+      return state;
+
+    }on AttendanceException catch(error){
+      print(error);
+      AttendanceException(message: error.message);
+
+    }
+  }
+ 
 
   Future<String> generateQrCode(String courseId) async {
     // Skip if already generating or same course requested
