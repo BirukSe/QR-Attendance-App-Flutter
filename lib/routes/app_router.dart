@@ -1,3 +1,5 @@
+import 'package:crossplatform_flutter/presentation/pages/student/class_details_page.dart';
+import 'package:crossplatform_flutter/presentation/pages/student/qr_scanning_page.dart';
 import 'package:crossplatform_flutter/presentation/pages/teacher/section_detail_page.dart';
 import 'package:crossplatform_flutter/presentation/pages/teacher/teacher_dashboard_page.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +52,21 @@ final appRouter = GoRouter(
         return QrDisplayPage(courseId: courseId);
       },
     ),
+    GoRoute(
+      path: '/class-detail/:courseId/:courseName/:teacherName',
+      builder: (context,state){
+        final courseId=state.pathParameters['courseId'];
+        final courseName=state.pathParameters['courseName'];
+        final teacherName=state.pathParameters['teacherName'];
+        return ClassDetailsPage(courseId: courseId!, courseName: courseName!, teacherName: teacherName!);
+      }
+      ),
+      GoRoute(
+        path: '/qr_scanner_page',
+        builder: (context, state){
+          return QrScanningPage();
+        }
+        )
   
    
    

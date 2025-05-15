@@ -40,6 +40,22 @@ class AttendanceController extends StateNotifier<AsyncValue<String>> {
   String? _lastCourseId; // Track last generated course
   
   AttendanceController(this._attendanceRepository) : super(const AsyncValue.data(''));
+
+
+
+Future<Attendancestats?> getAgainStudentAttendance(String courseId)async{
+  try{
+    final state=await _attendanceRepository.getAgainStudentAttendance(courseId);
+    return state;
+
+  }on AttendanceException catch(error){
+      print(error);
+      AttendanceException(message: error.message);
+
+    }
+} 
+
+
   Future<Attendancestats?> getStudentAttendanceStats(String courseId, String studentId) async{
     print("i am in getstas controller with");
     print(courseId);

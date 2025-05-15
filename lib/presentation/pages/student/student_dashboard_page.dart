@@ -109,7 +109,7 @@ class StudentDashboardPage extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final course = courses[index];
                     return GestureDetector(
-                      onTap: () => context.go('/class-detail/${course.id}'),
+                      onTap: () => context.go('/class-detail/${course.id}/${course.name}/${course.teacherName}'),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -204,24 +204,7 @@ class StudentDashboardPage extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         // Scan button at the bottom
-        Center(
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // Navigate to QR scanner
-              context.go('/qr-scanner');
-            },
-            icon: const Icon(Icons.qr_code_scanner),
-            label: const Text('Scan'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0A1A2F),
-              foregroundColor: Colors.white,
-              minimumSize: const Size(120, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ),
+        
       ],
     );
   }

@@ -56,6 +56,45 @@ class AttendanceRepository {
       );
     }
   }
+  Future<Attendancestats?> getAgainStudentAttendance(String courseId)async{
+    try{
+      final token = await _secureStorage.read(key: 'auth_token');
+         final response = await _dio.get(
+        '/history/class/$courseId',
+       
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+       if (response.statusCode == 200 || response.statusCode == 201) {
+        // The QR code check seems out of place here since your endpoint returns attendance stats
+        // If you need both, you should handle them separately
+        print("modified response");
+        print(Attendancestats.fromJson(response.data));
+        return  Attendancestats.fromJson(response.data);
+      } else {
+        throw AttendanceException(
+          message: response.data['message'] ?? 'Failed to fetch attendance stats',
+          statusCode: response.statusCode,
+        );
+      }
+
+    }on DioException catch (e) {
+      print("i have error bitch");
+      print(e.message);
+      throw AttendanceException(
+        message: e.response?.data['message'] ?? 'Network error occurred',
+        statusCode: e.response?.statusCode ?? 500,
+      );
+    } catch (error) {
+      print("i have the second error bitch");
+      print(error);
+      throw AttendanceException(
+        message: 'An unexpected error occurred',
+        statusCode: 500,
+      );
+    }
+  }
 
 
   Future<String> generateQrCode(String classId) async {
@@ -66,7 +105,7 @@ class AttendanceRepository {
       
       final response = await _dio.post(
         '/generate',
-        data: {'classId': classId},
+       
         options: Options(headers: {
           'Authorization': 'Bearer $token',
         }),
