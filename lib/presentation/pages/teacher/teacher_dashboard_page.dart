@@ -117,13 +117,7 @@ class TeacherDashboardPage extends ConsumerWidget {
             ],
           ),
         ),
-        GestureDetector(
-          onTap:() {},
-          child: Image.asset(
-            'assets/images/gg_qr.png',
-           
-          ),
-        ),
+       
 
         ],),
        

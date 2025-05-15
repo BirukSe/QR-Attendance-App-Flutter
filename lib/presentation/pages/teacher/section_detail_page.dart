@@ -57,12 +57,12 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
             // Section info card
             courseAsync.when(
               data: (courses) => studentsAsync.when(
-                data: (students) => _buildSectionInfo(students.length),
-                loading: () => _buildSectionInfo(0),
-                error: (_, __) => _buildSectionInfo(0),
+                data: (students) => _buildSectionInfo(students.length, widget.courseId),
+                loading: () => _buildSectionInfo(0, widget.courseId),
+                error: (_, __) => _buildSectionInfo(0,widget.courseId),
               ),
-              loading: () => _buildSectionInfo(0),
-              error: (_, __) => _buildSectionInfo(0),
+              loading: () => _buildSectionInfo(0,widget.courseId),
+              error: (_, __) => _buildSectionInfo(0,widget.courseId),
             ),
             
             // Students List
@@ -81,7 +81,7 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
     );
   }
 
-  Widget _buildSectionInfo(int studentCount) {
+  Widget _buildSectionInfo(int studentCount, String courseId) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -122,6 +122,13 @@ class _SectionDetailPageState extends ConsumerState<SectionDetailPage> {
               
             ],
           ),
+           GestureDetector(
+          onTap:() {context.go('/qr-generator/$courseId');},
+          child: Image.asset(
+            'assets/images/gg_qr.png',
+           
+          ),
+        ),
            
         ],
       ),
