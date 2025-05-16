@@ -160,7 +160,7 @@ void _showError(String message) {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                        Icon(Icons.arrow_back_ios),
+                       IconButton(onPressed: (){context.go('/student-dashboard');}, icon: Icon(Icons.arrow_back_ios)),
                         Text(widget.courseName, style: TextStyle(fontSize: 30))
                       ],),
                       Text("Teacher: ${widget.teacherName}"),
