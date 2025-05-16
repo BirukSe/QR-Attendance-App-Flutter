@@ -155,29 +155,26 @@ class ClassDetailsPage extends ConsumerWidget {
                         }
                          
                        ),
-                        GestureDetector(
-                          onTap: (){context.go('/qr_scanner_page');},
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 200, bottom: 20),
-                            child: Center(
-                                      child: ElevatedButton.icon(
-                                        onPressed: () {
-                                          // Navigate to QR scanner
-                                          context.go('/qr-scanner');
-                                        },
-                                        icon: const Icon(Icons.qr_code_scanner),
-                                        label: const Text('Scan'),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xFF0A1A2F),
-                                          foregroundColor: Colors.white,
-                                          minimumSize: const Size(120, 50),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 200, bottom: 20),
+                          child: Center(
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {
+                                        // Navigate to QR scanner
+                                        context.go('/qr_scanner_page/$courseId/$courseName/$teacherName');
+                                      },
+                                      icon: const Icon(Icons.qr_code_scanner),
+                                      label: const Text('Scan'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF0A1A2F),
+                                        foregroundColor: Colors.white,
+                                        minimumSize: const Size(120, 50),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
                                     ),
-                          ),
+                                  ),
                         ),
                        
                        

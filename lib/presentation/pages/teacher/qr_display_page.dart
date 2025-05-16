@@ -78,11 +78,7 @@ class QrDisplayPage extends ConsumerWidget {
             style: const TextStyle(color: Colors.black54),
           ),
           const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () => ref.read(attendanceControllerProvider.notifier)
-                .generateQrCode(courseId),
-            child: const Text('Try Again'),
-          ),
+        
         ],
       ),
     );

@@ -62,9 +62,13 @@ final appRouter = GoRouter(
       }
       ),
       GoRoute(
-        path: '/qr_scanner_page',
+        path: '/qr_scanner_page/:courseId/:courseName/:teacherName',
+      
         builder: (context, state){
-          return QrScanningPage();
+            final courseId=state.pathParameters['courseId'];
+        final courseName=state.pathParameters['courseName'];
+        final teacherName=state.pathParameters['teacherName'];
+          return QrScanningPage(courseId: courseId!, courseName: courseName!, teacherName: teacherName!);
         }
         )
   

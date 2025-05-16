@@ -102,14 +102,21 @@ class AttendanceRepository {
     print("Class ID: $classId");
     try {
       final token = await _secureStorage.read(key: 'auth_token');
+      print("my tojen is");
+      print(token);
       
       final response = await _dio.post(
         '/generate',
+      data: {
+        'classId': classId
+      },
        
         options: Options(headers: {
           'Authorization': 'Bearer $token',
         }),
       );
+      print("the response is");
+      print(response);
       print("Response: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -145,6 +152,8 @@ class AttendanceRepository {
 
   Future<bool> scanQrCode(String token, String classId) async {
     try {
+      print("i the repository am tryin with this bitch nigga");
+      print("token $token and classId of $classId");
       final response = await _dio.post(
         '/scan',
         data: {
