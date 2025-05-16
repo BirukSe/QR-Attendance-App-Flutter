@@ -150,14 +150,15 @@ class AttendanceRepository {
     }
   }
 
-  Future<bool> scanQrCode(String token, String classId) async {
+  Future<bool> scanQrCode(String tokenn, String classId) async {
     try {
       print("i the repository am tryin with this bitch nigga");
-      print("token $token and classId of $classId");
+      print("token  and classId of $classId");
+      final token = await _secureStorage.read(key: 'auth_token');
       final response = await _dio.post(
         '/scan',
         data: {
-          'token': token,
+          'token': tokenn,
           'classId': classId,
         },
         options: Options(headers: {

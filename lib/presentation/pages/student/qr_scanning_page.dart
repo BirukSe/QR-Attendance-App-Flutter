@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crossplatform_flutter/application/attendance/attendance_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QrScanningPage extends ConsumerStatefulWidget {
@@ -78,7 +79,7 @@ class _QrScanningPageState extends ConsumerState<QrScanningPage> {
               _showSuccess("Attendance marked successfully!");
               // Optionally navigate back after success
               Future.delayed(const Duration(seconds: 2), () {
-                if (mounted) Navigator.pop(context, true);
+                if (mounted) context.go('/student-dashboard');
               });
             } else {
               _showError("Failed to mark attendance");
